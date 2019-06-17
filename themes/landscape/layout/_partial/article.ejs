@@ -26,6 +26,24 @@
                 <%- post.content %>
             <% } %>
         </div>
+        <% if (true){ %>
+            <div id="gitmentContainer"></div>
+            <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+            <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+            <script>
+
+                var gitment = new Gitment({
+                    id: '<%= page._id %>',
+                    owner: '<%= config.gitment.github_id %>',
+                    repo: '<%= config.gitment.repo %>',
+                    oauth: {
+                        client_id: '<%= config.gitment.client_id %>',
+                        client_secret: '<%= config.gitment.client_secret%>',
+                    },
+                });
+                gitment.render('gitmentContainer')
+            </script>
+        <% } %>
         <footer class="article-footer">
             <!--<a data-url="<%- post.permalink %>" data-id="<%= post._id %>" class="article-share-link"><%= __('share') %></a>-->
             <% if (post.comments && config.disqus_shortname){ %>
@@ -43,10 +61,3 @@
         <%- partial('post/nav') %>
     <% } %>
 </article>
-<% if (!index && post.comments && config.disqus_shortname){ %>
-    <!--<section id="comments">-->
-    <!--<div id="disqus_thread">-->
-    <!--<noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>-->
-    <!--</div>-->
-    <!--</section>-->
-<% } %>

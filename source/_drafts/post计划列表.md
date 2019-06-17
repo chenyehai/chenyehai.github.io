@@ -8,9 +8,6 @@ date: 2018-09-24 01:39:36
 
 ### 优先
 
-python 继承与mro
-布隆过滤器
-简历
 
 fabric
 redis keys与scan
