@@ -21,7 +21,7 @@ description: 软件开发工程师的学习杂记，包含Linux、python、JavaS
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: https://chenyh.coding51.com
+url: https://blog.coding51.com
 root: /
 permalink: :year/:month/:day/:posturl/
 permalink_defaults:
