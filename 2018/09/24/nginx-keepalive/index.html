@@ -11,11 +11,11 @@
 <meta name="keywords" content="nginx,keepalive,http">
 <meta property="og:type" content="article">
 <meta property="og:title" content="nginx的keepalive配置">
-<meta property="og:url" content="https://chenyh.coding51.com/2018/09/24/nginx-keepalive/index.html">
+<meta property="og:url" content="https://blog.coding51.com/2018/09/24/nginx-keepalive/index.html">
 <meta property="og:site_name" content="我的博客">
 <meta property="og:description" content="基础知识 http协议是在应用层的，它的传输层使用的协议是tcp。因此发出http请求之前，需要先建立tcp连接。 tcp连接需要三次握手，释放连接需要四次挥手。tcp连接释放之后，主动关闭连接一端还需要维持连接的TIME_WAIT状态的2MSL的时间。 通过使用keep-alive机制，对连接进行复用，减少tcp连接建立与释放，从而减少tcp握手挥手次数，也意味着可以减少TIME_WAIT状态连">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-06-12T17:09:00.824Z">
+<meta property="og:updated_time" content="2019-06-12T16:27:49.342Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="nginx的keepalive配置">
 <meta name="twitter:description" content="基础知识 http协议是在应用层的，它的传输层使用的协议是tcp。因此发出http请求之前，需要先建立tcp连接。 tcp连接需要三次握手，释放连接需要四次挥手。tcp连接释放之后，主动关闭连接一端还需要维持连接的TIME_WAIT状态的2MSL的时间。 通过使用keep-alive机制，对连接进行复用，减少tcp连接建立与释放，从而减少tcp握手挥手次数，也意味着可以减少TIME_WAIT状态连">
@@ -59,7 +59,7 @@
         <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://chenyh.coding51.com"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.coding51.com"></form>
       </div>
     </div>
   </div>
@@ -106,7 +106,7 @@
             
         </div>
         <footer class="article-footer">
-            <!--<a data-url="https://chenyh.coding51.com/2018/09/24/nginx-keepalive/" data-id="cjwthpsup0002agb357qq3xjw" class="article-share-link">分享</a>-->
+            <!--<a data-url="https://blog.coding51.com/2018/09/24/nginx-keepalive/" data-id="cjwtgcx920002igb37rq27h46" class="article-share-link">分享</a>-->
             
             
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http/">http</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/keepalive/">keepalive</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx/">nginx</a></li></ul>
