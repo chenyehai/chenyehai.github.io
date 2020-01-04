@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>python中的闭包 | 我的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="闭包的概念闭包是由函数以及创建该函数的词法环境组合而成。这个环境包含了这个闭包创建时所能访问的所有局部变量。下面是引用自维基百科的一段话，在计算机科学中，闭包（英语：Closure），又称词法闭包（Lexical Closure）或函数闭包（function closures），是引用了自由变量的函数。这个被引用的自由变量将和这个函数一同存在，即使已经离开了创造它的环境也不例外。所以，有另一种说法">
+<meta name="keywords" content="python,闭包">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python中的闭包">
+<meta property="og:url" content="https://blog.coding51.com/2018/09/30/python-closure/index.html">
+<meta property="og:site_name" content="我的博客">
+<meta property="og:description" content="闭包的概念闭包是由函数以及创建该函数的词法环境组合而成。这个环境包含了这个闭包创建时所能访问的所有局部变量。下面是引用自维基百科的一段话，在计算机科学中，闭包（英语：Closure），又称词法闭包（Lexical Closure）或函数闭包（function closures），是引用了自由变量的函数。这个被引用的自由变量将和这个函数一同存在，即使已经离开了创造它的环境也不例外。所以，有另一种说法">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-01-04T16:29:15.398Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python中的闭包">
+<meta name="twitter:description" content="闭包的概念闭包是由函数以及创建该函数的词法环境组合而成。这个环境包含了这个闭包创建时所能访问的所有局部变量。下面是引用自维基百科的一段话，在计算机科学中，闭包（英语：Closure），又称词法闭包（Lexical Closure）或函数闭包（function closures），是引用了自由变量的函数。这个被引用的自由变量将和这个函数一同存在，即使已经离开了创造它的环境也不例外。所以，有另一种说法">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <!--<link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">-->
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">我的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">学习杂记</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">首页</a>
+        
+          <a class="main-nav-link" href="/archives">归档</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        <!---->
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.coding51.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-python中的闭包" class="article article-type-post" itemscope
+         itemprop="blogPost">
+    <div class="article-meta">
+        <a href="/2018/09/30/python-closure/" class="article-date">
+  <time datetime="2018-09-30T13:12:25.000Z" itemprop="datePublished">2018-09-30</time>
+</a>
+        
+    </div>
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+  
+    <h1 class="article-title" itemprop="name">
+      python中的闭包
+    </h1>
+  
+
+            </header>
+        
+        <div class="article-entry" itemprop="articleBody">
+            
+                <h3 id="闭包的概念"><a href="#闭包的概念" class="headerlink" title="闭包的概念"></a>闭包的概念</h3><p>闭包是由函数以及创建该函数的词法环境组合而成。这个环境包含了这个闭包创建时所能访问的所有局部变量。<br>下面是引用自<a href="https://zh.wikipedia.org/wiki/%E9%97%AD%E5%8C%85_%28%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6%29" target="_blank" rel="noopener">维基百科</a>的一段话，<br><code>在计算机科学中，闭包（英语：Closure），又称词法闭包（Lexical Closure）或函数闭包（function closures），是引用了自由变量的函数。这个被引用的自由变量将和这个函数一同存在，即使已经离开了创造它的环境也不例外。所以，有另一种说法认为闭包是由函数和与其相关的引用环境组合而成的实体。闭包在运行时可以有多个实例，不同的引用环境和相同的函数组合可以产生不同的实例。</code><br>我的理解：闭包就是在一个函数（姑且称作外层函数）中定义了另一个函数（内层函数），并且内层函数中引用了外层函数的一个或多个局部变量。通常，外层函数返回值为内层函数。</p>
+<h3 id="闭包实例与理解"><a href="#闭包实例与理解" class="headerlink" title="闭包实例与理解"></a>闭包实例与理解</h3><p>下面是一个python语言的闭包实例。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">my_pow</span><span class="params">(x)</span>:</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">inner_pow</span><span class="params">(y)</span>:</span></span><br><span class="line">		<span class="keyword">return</span> x**y</span><br><span class="line">	<span class="keyword">return</span> inner_pow</span><br><span class="line"></span><br><span class="line">pow3 = my_pow(<span class="number">3</span>)</span><br><span class="line">pow4 = my_pow(<span class="number">4</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> pow3(<span class="number">2</span>) <span class="comment"># 输出3的2次方，9</span></span><br><span class="line"><span class="keyword">print</span> pow4(<span class="number">2</span>) <span class="comment"># 输出4的2次方，16</span></span><br></pre></td></tr></table></figure></p>
+<p>在上面例子中，pow3实际就是inner_pow与my_pow中的引用环境复合而成，也就是维护了my_pow中的x的值为3。pow3和pow4中的x值是互不干扰，单独维护的，所以调用pow3和pow4能得到正确的结果，它们的引用环境是不同的。</p>
+<h3 id="使用闭包的场景"><a href="#使用闭包的场景" class="headerlink" title="使用闭包的场景"></a>使用闭包的场景</h3><p>进行惰性计算时可以使用闭包。因为惰性计算可能需要延迟调用闭包内的函数，并且要在局部维持一些变量。<br>由于闭包实现了封装，某些需要用到类的场景可以使用闭包实现，但是一般建议是属性与方法比较少时，才用闭包代替类。<br>总的来说，就是在需要维护一个非全局变量时使用闭包，将需要维护的非全局变量定义在创造闭包的环境中（闭包外层函数的局部变量）即可。比如下面的例子，实现计时器，需要维护总次数<code>total</code>，但是总次数不是全局变量,借助闭包实现容易。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">counter</span><span class="params">()</span>:</span></span><br><span class="line">	total = <span class="number">0</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">incr</span><span class="params">()</span>:</span></span><br><span class="line">		<span class="keyword">nonlocal</span> total <span class="comment">#  nonlocal关键字在python3中才有</span></span><br><span class="line">		total += <span class="number">1</span></span><br><span class="line">		<span class="keyword">return</span> total</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> incr</span><br></pre></td></tr></table></figure></p>
+<p>上面例子用到<code>nonlocal</code>关键字，该关键字python2没有，故在python2中需要换一种方式，比如将次数记录在列表a的第一个元素中,初始化为<code>a=[0]</code>, 每次增加的时候就是<code>a[0] = a[0] + 1</code>。</p>
+<h3 id="使用闭包需要注意的问题"><a href="#使用闭包需要注意的问题" class="headerlink" title="使用闭包需要注意的问题"></a>使用闭包需要注意的问题</h3><ol>
+<li>python闭包中如果需要修改外部函数的局部变量，需要格外注意。如上面计时器的例子，需要加入<code>nonlocal</code>关键字表明<code>total</code>不是内层函数的局部变量，需要往上查找。如果没有这一行，则total为内层函数的局部变量，会导致结果不符合预期。</li>
+<li>由于闭包的内层函数需要引用外层函数的变量，因此在外层变量会发生变化时需要留意。比如下面的例子：<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">func_list</span><span class="params">()</span>:</span></span><br><span class="line">	result_list = []</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">inner_func</span><span class="params">()</span>:</span></span><br><span class="line">		<span class="keyword">return</span> i * <span class="number">2</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">4</span>):</span><br><span class="line">		result_list.append(inner_func)</span><br><span class="line">    </span><br><span class="line">	<span class="keyword">return</span> result_list</span><br><span class="line"></span><br><span class="line">l = func_list()</span><br><span class="line"><span class="keyword">for</span> fc <span class="keyword">in</span> l:</span><br><span class="line">	print(fc())</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>这个例子中，每次调用fc返回的都是6。因为<code>inner_func</code>绑定的外层函数变量i的值是在调用<code>inner_func</code>的时候才查找的，在调用它的时候，i的值是3，故每次返回值都是6。上面例子还可以写成<code>lambda</code>的形式，<code>result_list = [lambda :i*2 for i in range(4)]</code>。形式的改变，不会影响它的运行结果，因为<code>lambda</code>只是函数的另一种写法。</p>
+<ol start="3">
+<li>如果在闭包中维护过多的变量，对性能或多或少有影响，所以闭包应该尽量精巧。</li>
+</ol>
+
+            
+        </div>
+        
+            <div id="gitmentContainer"></div>
+            <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+            <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+            <script>
+
+                var gitment = new Gitment({
+                    id: 'ck4ztazb400097srzhq2h21q0',
+                    owner: 'chenyehai',
+                    repo: 'https://github.com/chenyehai/chenyehai.github.io.git',
+                    oauth: {
+                        client_id: '9c5c42b866109ad21d06',
+                        client_secret: '6b02d03f04357b84034311ee8afa6cc5149a994a',
+                    },
+                });
+                gitment.render('gitmentContainer')
+            </script>
+        
+        <footer class="article-footer">
+            <!--<a data-url="https://blog.coding51.com/2018/09/30/python-closure/" data-id="ck4ztazb400097srzhq2h21q0" class="article-share-link">分享</a>-->
+            
+            
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/闭包/">闭包</a></li></ul>
+
+            
+            <div style="text-align: right; color: #666">
+                <span id="busuanzi_container_page_pv" >本文访问量<span id="busuanzi_value_page_pv"></span>次</span>
+            </div>
+            
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+  
+    <a href="/2018/10/01/python-is-equal/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          python的比较方法is和==区别
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/09/24/nginx-keepalive/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">nginx的keepalive配置</div>
+    </a>
+  
+</nav>
+
+    
+</article></section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/GIL/">GIL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MRO/">MRO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PyPI/">PyPI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http/">http</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/keepalive/">keepalive</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/location/">location</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oop/">oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/with/">with</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/上下文管理/">上下文管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/哈希/">哈希</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/布隆过滤器/">布隆过滤器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/异常处理/">异常处理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/打包/">打包</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/闭包/">闭包</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/GIL/" style="font-size: 10px;">GIL</a> <a href="/tags/MRO/" style="font-size: 10px;">MRO</a> <a href="/tags/PyPI/" style="font-size: 10px;">PyPI</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/http/" style="font-size: 10px;">http</a> <a href="/tags/keepalive/" style="font-size: 10px;">keepalive</a> <a href="/tags/location/" style="font-size: 10px;">location</a> <a href="/tags/nginx/" style="font-size: 15px;">nginx</a> <a href="/tags/oop/" style="font-size: 10px;">oop</a> <a href="/tags/python/" style="font-size: 20px;">python</a> <a href="/tags/with/" style="font-size: 10px;">with</a> <a href="/tags/上下文管理/" style="font-size: 10px;">上下文管理</a> <a href="/tags/哈希/" style="font-size: 10px;">哈希</a> <a href="/tags/布隆过滤器/" style="font-size: 10px;">布隆过滤器</a> <a href="/tags/异常处理/" style="font-size: 10px;">异常处理</a> <a href="/tags/打包/" style="font-size: 10px;">打包</a> <a href="/tags/闭包/" style="font-size: 10px;">闭包</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">一月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/01/05/bloom-filter/">布隆过滤器简介</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/02/python-oop-mro/">python类的继承与方法解析顺序（MRO）</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/02/python-pypi/">代码库打包上传到PyPI服务器</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/01/python-with/">python上下文管理利器--with</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/01/python-exception/">python的异常处理</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+    
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            <span id="busuanzi_container_site_pv" style="font-size: 18px">访问量<span
+                        id="busuanzi_value_site_pv"></span>次</span>
+            <br>
+            <span id="busuanzi_container_site_uv"  style="font-size: 18px">访客数<span id="busuanzi_value_site_uv"></span>人</span>
+            <br>
+            &copy; 2020 Yehai Chen<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        </div>
+    </div>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//libs.baidu.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

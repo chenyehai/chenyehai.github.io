@@ -4,7 +4,4 @@ db.json
 *.log
 node_modules/
 **/.idea
-public
-public/
-docs/
 .deploy*/

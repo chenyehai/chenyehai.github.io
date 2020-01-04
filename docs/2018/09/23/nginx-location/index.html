@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>nginx的location匹配规则 | 我的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="location的语法规则官网所示location语法规则如下：1234Syntax:	 location [ = | ~ | ~* | ^~ ] uri &amp;#123; ... &amp;#125;         location @name &amp;#123; ... &amp;#125;Default: —Context: server, location 第一种语法的location为无名location（ps">
+<meta name="keywords" content="nginx,location">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nginx的location匹配规则">
+<meta property="og:url" content="https://blog.coding51.com/2018/09/23/nginx-location/index.html">
+<meta property="og:site_name" content="我的博客">
+<meta property="og:description" content="location的语法规则官网所示location语法规则如下：1234Syntax:	 location [ = | ~ | ~* | ^~ ] uri &amp;#123; ... &amp;#125;         location @name &amp;#123; ... &amp;#125;Default: —Context: server, location 第一种语法的location为无名location（ps">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-01-04T16:29:15.398Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="nginx的location匹配规则">
+<meta name="twitter:description" content="location的语法规则官网所示location语法规则如下：1234Syntax:	 location [ = | ~ | ~* | ^~ ] uri &amp;#123; ... &amp;#125;         location @name &amp;#123; ... &amp;#125;Default: —Context: server, location 第一种语法的location为无名location（ps">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <!--<link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">-->
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">我的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">学习杂记</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">首页</a>
+        
+          <a class="main-nav-link" href="/archives">归档</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        <!---->
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.coding51.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-nginx的location匹配规则" class="article article-type-post" itemscope
+         itemprop="blogPost">
+    <div class="article-meta">
+        <a href="/2018/09/23/nginx-location/" class="article-date">
+  <time datetime="2018-09-23T13:26:22.000Z" itemprop="datePublished">2018-09-23</time>
+</a>
+        
+    </div>
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+  
+    <h1 class="article-title" itemprop="name">
+      nginx的location匹配规则
+    </h1>
+  
+
+            </header>
+        
+        <div class="article-entry" itemprop="articleBody">
+            
+                <h3 id="location的语法规则"><a href="#location的语法规则" class="headerlink" title="location的语法规则"></a>location的语法规则</h3><p><a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#location" target="_blank" rel="noopener">官网</a>所示location语法规则如下：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Syntax:	 location [ = | ~ | ~* | ^~ ] uri &#123; ... &#125;</span><br><span class="line">         location @name &#123; ... &#125;</span><br><span class="line">Default: —</span><br><span class="line">Context: server, location</span><br></pre></td></tr></table></figure></p>
+<p>第一种语法的location为无名location（ps:我自己起的名字，便于区分，以下location如没有特别说明，都是这种无名location），uri参数为必须的，<code>= ， ~ ， ~* ， ^~</code>这几个符号可选。</p>
+<p>第二种语法的location称为命名location，用于server内部重定向，不能直接用来处理正常的请求,所以也没有uri的参数。本文不对其展开。</p>
+<p>语法规则可见，location没有默认值，上下文为server和location，所以location也可以嵌套在location内部。但是不能随便嵌套，有两个规则：</p>
+<ol>
+<li>内部uri不可能匹配到时，不能嵌套。比如<code>/ab</code> 不能嵌套在 <code>/b</code>内, 因为当 <code>/b</code>匹配后，<code>/ab</code>显然不可能再匹配。</li>
+<li>命名location内不能嵌套其他location，并且也不能嵌套在其他location中，命名location只能在server内。</li>
+</ol>
+<h3 id="location匹配符号的含义"><a href="#location匹配符号的含义" class="headerlink" title="location匹配符号的含义"></a>location匹配符号的含义</h3><p><code>= ， ^~, ~ ， ~*</code>四个匹配符号的基本优先级按下面列表逐渐降低，=优先级最高，基本含义如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">= 表示绝对匹配。只有请求的url路径与后面的字符串完全相等时，才会命中。</span><br><span class="line">^~ 表示如果该符号后面的字符是最佳匹配，采用该规则，不再进行后续的查找。</span><br><span class="line">~ 表示该规则是使用正则定义的，区分大小写。</span><br><span class="line">~* 表示该规则是使用正则定义的，不区分大小写。</span><br><span class="line">四个符号都不用，也就是省略匹配符的，只要包含uri参数中的字符即可匹配成功。所以`location / &#123;&#125;`可以匹配到任何其他location不匹配的url请求。不使用匹配符的location优先级最低，</span><br></pre></td></tr></table></figure></p>
+<h3 id="常见配置"><a href="#常见配置" class="headerlink" title="常见配置"></a>常见配置</h3><p>这里列出常见的共存配置规则，如下。为了方便测试，所有location在nginx中直接返回文本内容，可以直接拷贝以下配置去测试。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">location = / &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &apos;configuration A&apos;;</span><br><span class="line">&#125;</span><br><span class="line">location = /login &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &apos;configuration B&apos;;</span><br><span class="line">&#125;</span><br><span class="line">location ^~ /static/ &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &apos;configuration C&apos;;</span><br><span class="line">&#125;</span><br><span class="line">location ~* \.jpg$ &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &apos;configuration E of jpg&apos;;</span><br><span class="line">&#125;</span><br><span class="line">location ~ \.(gif|jpg|png|js|css)$ &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &apos;configuration D&apos;;</span><br><span class="line">&#125;</span><br><span class="line">location ~* \.png$ &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &apos;configuration E&apos;;</span><br><span class="line">&#125;</span><br><span class="line">location ^~ /s1 &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &apos;configuration F&apos;;</span><br><span class="line">&#125;</span><br><span class="line">location ^~ /s1long &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &apos;configuration G&apos;;</span><br><span class="line">&#125;</span><br><span class="line">location / &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &apos;configuration H&apos;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>基于以上配置，实验结果如下<br><strong>提示：本文实验使用nginx版本为1.12.2，运行在centos系统下</strong></p>
+<table>
+<thead>
+<tr>
+<th>测试url</th>
+<th>返回值（即匹配规则）</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="http://domain/" target="_blank" rel="noopener">http://domain/</a></td>
+<td>configuration A</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="http://domain/test" target="_blank" rel="noopener">http://domain/test</a></td>
+<td>configuration H</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="http://domain/login" target="_blank" rel="noopener">http://domain/login</a></td>
+<td>configuration B</td>
+<td>B优先于H</td>
+</tr>
+<tr>
+<td><a href="http://domain/static/login/" target="_blank" rel="noopener">http://domain/static/login/</a></td>
+<td>configuration C</td>
+<td>B为精确匹配，此url不符合B</td>
+</tr>
+<tr>
+<td><a href="http://domain/login/" target="_blank" rel="noopener">http://domain/login/</a></td>
+<td>configuration H</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><a href="http://domain/static/p.png" target="_blank" rel="noopener">http://domain/static/p.png</a></td>
+<td>configuration C</td>
+<td>^~最佳匹配优先于正则匹配，故C优先于D</td>
+</tr>
+<tr>
+<td><a href="http://domain/test/p.png" target="_blank" rel="noopener">http://domain/test/p.png</a></td>
+<td>configuration D</td>
+<td>D和E均匹配，并且都是正则匹配，写在上方的优先，D生效</td>
+</tr>
+<tr>
+<td><a href="http://domain/test/p.jpg" target="_blank" rel="noopener">http://domain/test/p.jpg</a></td>
+<td>configuration E of jpg</td>
+<td>同上</td>
+</tr>
+<tr>
+<td><a href="http://domain/test/p.pNG" target="_blank" rel="noopener">http://domain/test/p.pNG</a></td>
+<td>configuration E</td>
+<td>D区分大小写，不匹配pNG，所以E生效</td>
+</tr>
+<tr>
+<td><a href="http://domain/s1long" target="_blank" rel="noopener">http://domain/s1long</a></td>
+<td>configuration G</td>
+<td>F、G同是最佳匹配，G可以匹配到的内容较长，G优先</td>
+</tr>
+</tbody>
+</table>
+<h3 id="uri后的斜杆"><a href="#uri后的斜杆" class="headerlink" title="uri后的斜杆"></a>uri后的斜杆</h3><p>先祭出官网上的一段话</p>
+<blockquote>
+<p>If a location is defined by a prefix string that ends with the slash character, and requests are processed by one of proxy_pass, fastcgi_pass, uwsgi_pass, scgi_pass, memcached_pass, or grpc_pass, then the special processing is performed. In response to a request with URI equal to this string, but without the trailing slash, a permanent redirect with the code 301 will be returned to the requested URI with the slash appended. If this is not desired, an exact match of the URI and location could be defined like this:<br>location /user/ {<br>    proxy_pass <a href="http://user.example.com" target="_blank" rel="noopener">http://user.example.com</a>;<br>}<br>location = /user {<br>    proxy_pass <a href="http://login.example.com" target="_blank" rel="noopener">http://login.example.com</a>;<br>}</p>
+</blockquote>
+<p>就是说如果有一个uri是以斜杆开始以斜杆结束的，并且内部有转发请求的，如果访问的url除了末尾的斜杆不匹配以外，其他都匹配，nginx会返回永久重定向。如果这不是想要的结果，可以加上一个精确匹配的location。</p>
+<h3 id="proxy-pass的转发规则"><a href="#proxy-pass的转发规则" class="headerlink" title="proxy_pass的转发规则"></a>proxy_pass的转发规则</h3><p>proxy_pass用在location中转发请求给后端服务，proxy_pass的转发url有两种，nginx对它们的处理方法不同。</p>
+<ol>
+<li>一种是不带路径部分的。<code>proxy_pass http://127.0.0.1;</code>，就是只有后端服务地址，没有路径的，即没有出现<code>/</code>。这种情况下，nginx会把客户端请求的url中的所有路径拼接在这个地址后面，然后发请求。</li>
+<li>另一种是带有路径部分。<code>proxy_pass http://127.0.0.1/remote/;</code>。这种情况，nginx先把location中匹配的部分路径去掉，剩下的拼接，然后发起请求。特别注意，<code>proxy_pass http://127.0.0.1/;</code>这个也属于这一类。</li>
+</ol>
+<h3 id="alias与root在location中的区别"><a href="#alias与root在location中的区别" class="headerlink" title="alias与root在location中的区别"></a>alias与root在location中的区别</h3><p>在配置location的静态文件目录时，用到alias与root，两者处理规则略有不同。这里用两个简单例子说明。</p>
+<h4 id="alias"><a href="#alias" class="headerlink" title="alias"></a>alias</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location ^~ /test/ &#123;</span><br><span class="line"> 	alias /www/root/html/my_test/;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这种情况，如果一个请求的URI是/test/one.html时，web服务器将会返回服务器上的/www/root/html/my_test/one.html的文件。因为alias是把location后面配置的路径（也就是匹配部分）丢弃掉。</p>
+<h4 id="root"><a href="#root" class="headerlink" title="root"></a>root</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location ^~ /test/ &#123;</span><br><span class="line">	root /www/root/html/my_test/;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里就不一样了。如果一个请求的URI是/test/one.html时，web服务器将会返回服务器上的/www/root/html/my_test/test/one.html的文件。root是在指定的目录下，寻找请求路径文件，不会去除匹配到的部分。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>location的匹配优先级如下：</p>
+<ol>
+<li>精确匹配 &gt; 最佳匹配(^~) &gt; 正则匹配</li>
+<li>多字符匹配 &gt; 少字符匹配</li>
+<li>配置文件中写在上方的规则优先于写在下方的规则</li>
+</ol>
+<p>location的配置乃至nginx的配置都很灵活，很强大。本文只说了一些基本的，遇到具体问题，不在本文所说的规则中时，可以用搜索引擎搜索，也可以自己动手配置实验验证。</p>
+
+            
+        </div>
+        
+            <div id="gitmentContainer"></div>
+            <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+            <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+            <script>
+
+                var gitment = new Gitment({
+                    id: 'ck4ztazax00027srz7oc1jhze',
+                    owner: 'chenyehai',
+                    repo: 'https://github.com/chenyehai/chenyehai.github.io.git',
+                    oauth: {
+                        client_id: '9c5c42b866109ad21d06',
+                        client_secret: '6b02d03f04357b84034311ee8afa6cc5149a994a',
+                    },
+                });
+                gitment.render('gitmentContainer')
+            </script>
+        
+        <footer class="article-footer">
+            <!--<a data-url="https://blog.coding51.com/2018/09/23/nginx-location/" data-id="ck4ztazax00027srz7oc1jhze" class="article-share-link">分享</a>-->
+            
+            
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/location/">location</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx/">nginx</a></li></ul>
+
+            
+            <div style="text-align: right; color: #666">
+                <span id="busuanzi_container_page_pv" >本文访问量<span id="busuanzi_value_page_pv"></span>次</span>
+            </div>
+            
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+  
+    <a href="/2018/09/24/nginx-keepalive/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          nginx的keepalive配置
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/09/23/git-ssh/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">使用ssh连接git服务器</div>
+    </a>
+  
+</nav>
+
+    
+</article></section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/GIL/">GIL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MRO/">MRO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PyPI/">PyPI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http/">http</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/keepalive/">keepalive</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/location/">location</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oop/">oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/with/">with</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/上下文管理/">上下文管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/哈希/">哈希</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/布隆过滤器/">布隆过滤器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/异常处理/">异常处理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/打包/">打包</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/闭包/">闭包</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/GIL/" style="font-size: 10px;">GIL</a> <a href="/tags/MRO/" style="font-size: 10px;">MRO</a> <a href="/tags/PyPI/" style="font-size: 10px;">PyPI</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/http/" style="font-size: 10px;">http</a> <a href="/tags/keepalive/" style="font-size: 10px;">keepalive</a> <a href="/tags/location/" style="font-size: 10px;">location</a> <a href="/tags/nginx/" style="font-size: 15px;">nginx</a> <a href="/tags/oop/" style="font-size: 10px;">oop</a> <a href="/tags/python/" style="font-size: 20px;">python</a> <a href="/tags/with/" style="font-size: 10px;">with</a> <a href="/tags/上下文管理/" style="font-size: 10px;">上下文管理</a> <a href="/tags/哈希/" style="font-size: 10px;">哈希</a> <a href="/tags/布隆过滤器/" style="font-size: 10px;">布隆过滤器</a> <a href="/tags/异常处理/" style="font-size: 10px;">异常处理</a> <a href="/tags/打包/" style="font-size: 10px;">打包</a> <a href="/tags/闭包/" style="font-size: 10px;">闭包</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">一月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/01/05/bloom-filter/">布隆过滤器简介</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/02/python-oop-mro/">python类的继承与方法解析顺序（MRO）</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/02/python-pypi/">代码库打包上传到PyPI服务器</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/01/python-with/">python上下文管理利器--with</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/01/python-exception/">python的异常处理</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+    
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            <span id="busuanzi_container_site_pv" style="font-size: 18px">访问量<span
+                        id="busuanzi_value_site_pv"></span>次</span>
+            <br>
+            <span id="busuanzi_container_site_uv"  style="font-size: 18px">访客数<span id="busuanzi_value_site_uv"></span>人</span>
+            <br>
+            &copy; 2020 Yehai Chen<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        </div>
+    </div>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//libs.baidu.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
