@@ -48,8 +48,6 @@ date: 2020-01-05 18:18:59
     <td></td>
     <td>Return JSON for specified type</td>
   </tr>
-
- <!-- end for option -->
 </tbody>
 </table>
 
