@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.8.0">
+<head>
   <meta charset="utf-8">
   
 
@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="我的博客">
 <meta property="og:description" content="with的基本语法与作用with的语法(摘自python文档)如下：12with_stmt ::=  &amp;quot;with&amp;quot; with_item (&amp;quot;,&amp;quot; with_item)* &amp;quot;:&amp;quot; suitewith_item ::=  expression [&amp;quot;as&amp;quot; target] 因为with语句可以包含多个with_item，所以">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-06-12T16:27:49.346Z">
+<meta property="og:updated_time" content="2020-01-05T14:39:13.703Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="python上下文管理利器--with">
 <meta name="twitter:description" content="with的基本语法与作用with的语法(摘自python文档)如下：12with_stmt ::=  &amp;quot;with&amp;quot; with_item (&amp;quot;,&amp;quot; with_item)* &amp;quot;:&amp;quot; suitewith_item ::=  expression [&amp;quot;as&amp;quot; target] 因为with语句可以包含多个with_item，所以">
@@ -28,7 +28,7 @@
   
   <link rel="stylesheet" href="/css/style.css">
 </head>
-</html>
+
 <body>
   <div id="container">
     <div id="wrap">
@@ -65,7 +65,8 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-python上下文管理利器--with" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-python上下文管理利器--with" class="article article-type-post" itemscope
+         itemprop="blogPost">
     <div class="article-meta">
         <a href="/2018/10/01/python-with/" class="article-date">
   <time datetime="2018-10-01T15:58:10.000Z" itemprop="datePublished">2018-10-01</time>
@@ -101,7 +102,7 @@
 <li>执行主要语句块，也就是<code>suite</code>部分。</li>
 <li>调用上下文管理对象的<code>__exit__</code>方法。如果上一步没有异常，则三个参数都传<code>None</code>，否则就是异常类型、异常内容和异常的位置追踪信息<br>如果<code>suite</code>中没有异常，则一切正常。如果有异常，则取决于<code>__exit__</code>的返回值，如果<code>__exit__</code>的返回值为<code>False</code>，则异常会再次触发抛出，如果返回值为<code>True</code>，则异常不会抛出，后续代码继续执行。</li>
 </ol>
-<h3 id="让对象支持上下文管理"><a href="#让对象支持上下文管理" class="headerlink" title="让对象支持上下文管理"></a>让对象支持上下文管理</h3><p>为了让对象支持上下文管理，只要让对象遵循上面说的上下文管理协议即可。下面我写一个支持上下文管理的类。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ContextDemo</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self._dict = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">set_attr</span><span class="params">(self, k, v)</span>:</span></span><br><span class="line">        self._dict[k] = v</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_attr</span><span class="params">(self, k)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self._dict[k]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__enter__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__exit__</span><span class="params">(self, exc_type, exc_value, traceback)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> exc_type:</span><br><span class="line">            print(exc_type)</span><br><span class="line">            print(exc_value)</span><br><span class="line">            <span class="comment"># return False</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">test_my_context_demo</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">with</span> ContextDemo() <span class="keyword">as</span> demo:</span><br><span class="line">        demo.set_attr(<span class="string">'name'</span>, <span class="string">'my_name'</span>)</span><br><span class="line">        demo.get_attr(<span class="string">'no'</span>)</span><br><span class="line">test_my_context_demo（）</span><br></pre></td></tr></table></figure></p>
+<h3 id="让对象支持上下文管理"><a href="#让对象支持上下文管理" class="headerlink" title="让对象支持上下文管理"></a>让对象支持上下文管理</h3><p>为了让对象支持上下文管理，只要让对象遵循上面说的上下文管理协议即可。下面我写一个支持上下文管理的类。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ContextDemo</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self._dict = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">set_attr</span><span class="params">(self, k, v)</span>:</span></span><br><span class="line">        self._dict[k] = v</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_attr</span><span class="params">(self, k)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self._dict[k]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__enter__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__exit__</span><span class="params">(self, exc_type, exc_value, traceback)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> exc_type:</span><br><span class="line">            print(exc_type)</span><br><span class="line">            print(exc_value)</span><br><span class="line">            <span class="comment"># return False</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">True</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">test_my_context_demo</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">with</span> ContextDemo() <span class="keyword">as</span> demo:</span><br><span class="line">        demo.set_attr(<span class="string">'name'</span>, <span class="string">'my_name'</span>)</span><br><span class="line">        demo.get_attr(<span class="string">'no'</span>)</span><br><span class="line">test_my_context_demo（）</span><br></pre></td></tr></table></figure></p>
 <p>运行上面代码会输出以下两行内容：<br><code>&lt;type &#39;exceptions.KeyError&#39;&gt;</code><br><code>&#39;no&#39;</code><br>因为with里面的语句块在调用<code>get_attr</code>时， 出现了错误，<code>no</code>不在字典中，所以调用<code>__exit__</code>时，<code>exc_type</code>会传递异常类型。最后因为是<code>__exit__</code>的返回值为True,所以执行代码时不会看到程序报异常，如果把<code>return False</code>的注释去掉，则异常还会往外抛。</p>
 <h3 id="使用contextlib实现上下文管理"><a href="#使用contextlib实现上下文管理" class="headerlink" title="使用contextlib实现上下文管理"></a>使用contextlib实现上下文管理</h3><p>如果你觉得像上面那样自己定义一个类有点麻烦，还有另一种简单的方法。旧式通过<code>contextlib</code>模块里的<code>contextmanager</code>装饰器装饰将函数装饰成为上下文管理器。函数中需要包含<code>yield</code>, 函数被<code>yield</code>关键词分割成两部分。</p>
 <p>在<code>yield</code>之前执行的代码，会在上面所说的<code>with</code>语句执行过程的第一步执行，然后<code>yield</code>返回的值相当于<code>__enter__</code>的返回值。<code>yield</code>之后的代码，则在<code>with</code>语句块执行完毕之后再执行了。<br>当然了，被<code>contextmanager</code>只能有一个<code>yield</code>，也就是只能用next迭代一次，否则会报错。如果感兴趣，可以看看<code>contextlib.py</code>的源码。<br>下面是一个例子:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> contextlib <span class="keyword">import</span> contextmanager</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@contextmanager</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">simple_context_demo</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        print(<span class="string">'get context manager obj'</span>)</span><br><span class="line">        d = &#123;<span class="string">'a'</span>: <span class="number">123</span>&#125;</span><br><span class="line">        <span class="keyword">yield</span> d</span><br><span class="line">    <span class="keyword">except</span> KeyError <span class="keyword">as</span> e:</span><br><span class="line">        print(e)</span><br><span class="line">    <span class="keyword">finally</span>:</span><br><span class="line">        print(<span class="string">'in finally'</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">test_context_manager_usage</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">with</span> simple_context_demo() <span class="keyword">as</span> ctx:</span><br><span class="line">        print(ctx[<span class="string">'a'</span>])</span><br></pre></td></tr></table></figure></p>
@@ -114,33 +115,15 @@
 
             
         </div>
-        
-            <div id="gitmentContainer"></div>
-            <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
-            <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-            <script>
-
-                var gitment = new Gitment({
-                    id: 'cjwtgcx9s000gigb3n9lxbeo6',
-                    owner: 'chenyehai',
-                    repo: 'chenyehai.github.io',
-                    oauth: {
-                        client_id: '9c5c42b866109ad21d06',
-                        client_secret: '6b02d03f04357b84034311ee8afa6cc5149a994a',
-                    },
-                });
-                gitment.render('gitmentContainer')
-            </script>
-        
         <footer class="article-footer">
-            <!--<a data-url="https://blog.coding51.com/2018/10/01/python-with/" data-id="cjwtgcx9s000gigb3n9lxbeo6" class="article-share-link">分享</a>-->
+            <!--<a data-url="https://blog.coding51.com/2018/10/01/python-with/" data-id="ck514k01600087orzbx1gyzz5" class="article-share-link">分享</a>-->
             
             
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/with/">with</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/上下文管理/">上下文管理</a></li></ul>
 
             
             <div style="text-align: right; color: #666">
-                <span id="busuanzi_container_page_pv">本文访问量<span id="busuanzi_value_page_pv"></span>次</span>
+                <span id="busuanzi_container_page_pv" >本文访问量<span id="busuanzi_value_page_pv"></span>次</span>
             </div>
             
         </footer>
@@ -167,7 +150,8 @@
 </nav>
 
     
-</article></section>
+</article>
+</section>
         
           <aside id="sidebar">
   
@@ -178,7 +162,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/GIL/">GIL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MRO/">MRO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PyPI/">PyPI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http/">http</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/keepalive/">keepalive</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/location/">location</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oop/">oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/with/">with</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/上下文管理/">上下文管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/哈希/">哈希</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/布隆过滤器/">布隆过滤器</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/异常处理/">异常处理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/打包/">打包</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/闭包/">闭包</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/GIL/">GIL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MRO/">MRO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PyPI/">PyPI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-命令/">docker 命令</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http/">http</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/keepalive/">keepalive</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/location/">location</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oop/">oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/with/">with</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/上下文管理/">上下文管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/异常处理/">异常处理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/打包/">打包</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/闭包/">闭包</a></li></ul>
     </div>
   </div>
 
@@ -188,7 +172,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/GIL/" style="font-size: 10px;">GIL</a> <a href="/tags/MRO/" style="font-size: 10px;">MRO</a> <a href="/tags/PyPI/" style="font-size: 10px;">PyPI</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/http/" style="font-size: 10px;">http</a> <a href="/tags/keepalive/" style="font-size: 10px;">keepalive</a> <a href="/tags/location/" style="font-size: 10px;">location</a> <a href="/tags/nginx/" style="font-size: 15px;">nginx</a> <a href="/tags/oop/" style="font-size: 10px;">oop</a> <a href="/tags/python/" style="font-size: 20px;">python</a> <a href="/tags/with/" style="font-size: 10px;">with</a> <a href="/tags/上下文管理/" style="font-size: 10px;">上下文管理</a> <a href="/tags/哈希/" style="font-size: 10px;">哈希</a> <a href="/tags/布隆过滤器/" style="font-size: 10px;">布隆过滤器</a> <a href="/tags/异常处理/" style="font-size: 10px;">异常处理</a> <a href="/tags/打包/" style="font-size: 10px;">打包</a> <a href="/tags/闭包/" style="font-size: 10px;">闭包</a>
+      <a href="/tags/GIL/" style="font-size: 10px;">GIL</a> <a href="/tags/MRO/" style="font-size: 10px;">MRO</a> <a href="/tags/PyPI/" style="font-size: 10px;">PyPI</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/docker-命令/" style="font-size: 10px;">docker 命令</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/http/" style="font-size: 10px;">http</a> <a href="/tags/keepalive/" style="font-size: 10px;">keepalive</a> <a href="/tags/location/" style="font-size: 10px;">location</a> <a href="/tags/nginx/" style="font-size: 15px;">nginx</a> <a href="/tags/oop/" style="font-size: 10px;">oop</a> <a href="/tags/python/" style="font-size: 20px;">python</a> <a href="/tags/with/" style="font-size: 10px;">with</a> <a href="/tags/上下文管理/" style="font-size: 10px;">上下文管理</a> <a href="/tags/异常处理/" style="font-size: 10px;">异常处理</a> <a href="/tags/打包/" style="font-size: 10px;">打包</a> <a href="/tags/闭包/" style="font-size: 10px;">闭包</a>
     </div>
   </div>
 
@@ -197,7 +181,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">一月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li></ul>
     </div>
   </div>
 
@@ -210,7 +194,11 @@
       <ul>
         
           <li>
-            <a href="/2019/06/13/bloom-filter/">布隆过滤器简介</a>
+            <a href="/2020/01/05/bloom-filter/">布隆过滤器简介</a>
+          </li>
+        
+          <li>
+            <a href="/2020/01/05/docker-inspect/">docker inspect命令</a>
           </li>
         
           <li>
@@ -225,10 +213,6 @@
             <a href="/2018/10/01/python-with/">python上下文管理利器--with</a>
           </li>
         
-          <li>
-            <a href="/2018/10/01/python-exception/">python的异常处理</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -241,11 +225,12 @@
     
     <div class="outer">
         <div id="footer-info" class="inner">
-            <span id="busuanzi_container_site_pv" style="font-size: 18px">访问量<span id="busuanzi_value_site_pv"></span>次</span>
+            <span id="busuanzi_container_site_pv" style="font-size: 18px">访问量<span
+                        id="busuanzi_value_site_pv"></span>次</span>
             <br>
-            <span id="busuanzi_container_site_uv" style="font-size: 18px">访客数<span id="busuanzi_value_site_uv"></span>人</span>
+            <span id="busuanzi_container_site_uv"  style="font-size: 18px">访客数<span id="busuanzi_value_site_uv"></span>人</span>
             <br>
-            &copy; 2019 Yehai Chen<br>
+            &copy; 2020 Yehai Chen<br>
             Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
         </div>
     </div>
