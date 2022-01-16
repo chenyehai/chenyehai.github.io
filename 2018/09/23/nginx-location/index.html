@@ -87,7 +87,7 @@
         
         <div class="article-entry" itemprop="articleBody">
             
-                <h3 id="location的语法规则"><a href="#location的语法规则" class="headerlink" title="location的语法规则"></a>location的语法规则</h3><p><a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#location" target="_blank" rel="noopener">官网</a>所示location语法规则如下：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Syntax:	 location [ = | ~ | ~* | ^~ ] uri &#123; ... &#125;</span><br><span class="line">         location @name &#123; ... &#125;</span><br><span class="line">Default: —</span><br><span class="line">Context: server, location</span><br></pre></td></tr></table></figure></p>
+                <h3 id="location的语法规则"><a href="#location的语法规则" class="headerlink" title="location的语法规则"></a>location的语法规则</h3><p><a target="_blank" rel="noopener" href="http://nginx.org/en/docs/http/ngx_http_core_module.html#location">官网</a>所示location语法规则如下：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Syntax:	 location [ = | ~ | ~* | ^~ ] uri &#123; ... &#125;</span><br><span class="line">         location @name &#123; ... &#125;</span><br><span class="line">Default: —</span><br><span class="line">Context: server, location</span><br></pre></td></tr></table></figure></p>
 <p>第一种语法的location为无名location（ps:我自己起的名字，便于区分，以下location如没有特别说明，都是这种无名location），uri参数为必须的，<code>= ， ~ ， ~* ， ^~</code>这几个符号可选。</p>
 <p>第二种语法的location称为命名location，用于server内部重定向，不能直接用来处理正常的请求,所以也没有uri的参数。本文不对其展开。</p>
 <p>语法规则可见，location没有默认值，上下文为server和location，所以location也可以嵌套在location内部。但是不能随便嵌套，有两个规则：</p>
@@ -95,9 +95,8 @@
 <li>内部uri不可能匹配到时，不能嵌套。比如<code>/ab</code> 不能嵌套在 <code>/b</code>内, 因为当 <code>/b</code>匹配后，<code>/ab</code>显然不可能再匹配。</li>
 <li>命名location内不能嵌套其他location，并且也不能嵌套在其他location中，命名location只能在server内。</li>
 </ol>
-<h3 id="location匹配符号的含义"><a href="#location匹配符号的含义" class="headerlink" title="location匹配符号的含义"></a>location匹配符号的含义</h3><p><code>= ， ^~, ~ ， ~*</code>四个匹配符号的基本优先级按下面列表逐渐降低，=优先级最高，基本含义如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">= 表示绝对匹配。只有请求的url路径与后面的字符串完全相等时，才会命中。</span><br><span class="line">^~ 表示如果该符号后面的字符是最佳匹配，采用该规则，不再进行后续的查找。</span><br><span class="line">~ 表示该规则是使用正则定义的，区分大小写。</span><br><span class="line">~* 表示该规则是使用正则定义的，不区分大小写。</span><br><span class="line">四个符号都不用，也就是省略匹配符的，只要包含uri参数中的字符即可匹配成功。所以`location / &#123;&#125;`可以匹配到任何其他location不匹配的url请求。不使用匹配符的location优先级最低，</span><br></pre></td></tr></table></figure></p>
-<h3 id="常见配置"><a href="#常见配置" class="headerlink" title="常见配置"></a>常见配置</h3><p>这里列出常见的共存配置规则，如下。为了方便测试，所有location在nginx中直接返回文本内容，可以直接拷贝以下配置去测试。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">location = / &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &apos;configuration A&apos;;</span><br><span class="line">&#125;</span><br><span class="line">location = /login &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &apos;configuration B&apos;;</span><br><span class="line">&#125;</span><br><span class="line">location ^~ /static/ &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &apos;configuration C&apos;;</span><br><span class="line">&#125;</span><br><span class="line">location ~* \.jpg$ &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &apos;configuration E of jpg&apos;;</span><br><span class="line">&#125;</span><br><span class="line">location ~ \.(gif|jpg|png|js|css)$ &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &apos;configuration D&apos;;</span><br><span class="line">&#125;</span><br><span class="line">location ~* \.png$ &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &apos;configuration E&apos;;</span><br><span class="line">&#125;</span><br><span class="line">location ^~ /s1 &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &apos;configuration F&apos;;</span><br><span class="line">&#125;</span><br><span class="line">location ^~ /s1long &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &apos;configuration G&apos;;</span><br><span class="line">&#125;</span><br><span class="line">location / &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &apos;configuration H&apos;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>基于以上配置，实验结果如下<br><strong>提示：本文实验使用nginx版本为1.12.2，运行在centos系统下</strong></p>
+<h3 id="location匹配符号的含义"><a href="#location匹配符号的含义" class="headerlink" title="location匹配符号的含义"></a>location匹配符号的含义</h3><p><code>= ， ^~, ~ ， ~*</code>四个匹配符号的基本优先级按下面列表逐渐降低，=优先级最高，基本含义如下：<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">= 表示绝对匹配。只有请求的url路径与后面的字符串完全相等时，才会命中。</span><br><span class="line">^~ 表示如果该符号后面的字符是最佳匹配，采用该规则，不再进行后续的查找。</span><br><span class="line">~ 表示该规则是使用正则定义的，区分大小写。</span><br><span class="line">~* 表示该规则是使用正则定义的，不区分大小写。</span><br><span class="line">四个符号都不用，也就是省略匹配符的，只要包含uri参数中的字符即可匹配成功。所以`location / &#123;&#125;`可以匹配到任何其他location不匹配的url请求。不使用匹配符的location优先级最低，</span><br></pre></td></tr></table></figure></p>
+<h3 id="常见配置"><a href="#常见配置" class="headerlink" title="常见配置"></a>常见配置</h3><p>这里列出常见的共存配置规则，如下。为了方便测试，所有location在nginx中直接返回文本内容，可以直接拷贝以下配置去测试。<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">location = / &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &#x27;configuration A&#x27;;</span><br><span class="line">&#125;</span><br><span class="line">location = /login &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &#x27;configuration B&#x27;;</span><br><span class="line">&#125;</span><br><span class="line">location ^~ /static/ &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &#x27;configuration C&#x27;;</span><br><span class="line">&#125;</span><br><span class="line">location ~* \.jpg$ &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &#x27;configuration E of jpg&#x27;;</span><br><span class="line">&#125;</span><br><span class="line">location ~ \.(gif|jpg|png|js|css)$ &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &#x27;configuration D&#x27;;</span><br><span class="line">&#125;</span><br><span class="line">location ~* \.png$ &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &#x27;configuration E&#x27;;</span><br><span class="line">&#125;</span><br><span class="line">location ^~ /s1 &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &#x27;configuration F&#x27;;</span><br><span class="line">&#125;</span><br><span class="line">location ^~ /s1long &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &#x27;configuration G&#x27;;</span><br><span class="line">&#125;</span><br><span class="line">location / &#123;</span><br><span class="line">   default_type text/html;</span><br><span class="line">   return 200 &#x27;configuration H&#x27;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>基于以上配置，实验结果如下<br><strong>提示：本文实验使用nginx版本为1.12.2，运行在centos系统下</strong></p>
 <table>
 <thead>
 <tr>
@@ -108,52 +107,52 @@
 </thead>
 <tbody>
 <tr>
-<td><a href="http://domain/" target="_blank" rel="noopener">http://domain/</a></td>
+<td><a target="_blank" rel="noopener" href="http://domain/">http://domain/</a></td>
 <td>configuration A</td>
 <td></td>
 </tr>
 <tr>
-<td><a href="http://domain/test" target="_blank" rel="noopener">http://domain/test</a></td>
+<td><a target="_blank" rel="noopener" href="http://domain/test">http://domain/test</a></td>
 <td>configuration H</td>
 <td></td>
 </tr>
 <tr>
-<td><a href="http://domain/login" target="_blank" rel="noopener">http://domain/login</a></td>
+<td><a target="_blank" rel="noopener" href="http://domain/login">http://domain/login</a></td>
 <td>configuration B</td>
 <td>B优先于H</td>
 </tr>
 <tr>
-<td><a href="http://domain/static/login/" target="_blank" rel="noopener">http://domain/static/login/</a></td>
+<td><a target="_blank" rel="noopener" href="http://domain/static/login/">http://domain/static/login/</a></td>
 <td>configuration C</td>
 <td>B为精确匹配，此url不符合B</td>
 </tr>
 <tr>
-<td><a href="http://domain/login/" target="_blank" rel="noopener">http://domain/login/</a></td>
+<td><a target="_blank" rel="noopener" href="http://domain/login/">http://domain/login/</a></td>
 <td>configuration H</td>
 <td>同上</td>
 </tr>
 <tr>
-<td><a href="http://domain/static/p.png" target="_blank" rel="noopener">http://domain/static/p.png</a></td>
+<td><a target="_blank" rel="noopener" href="http://domain/static/p.png">http://domain/static/p.png</a></td>
 <td>configuration C</td>
 <td>^~最佳匹配优先于正则匹配，故C优先于D</td>
 </tr>
 <tr>
-<td><a href="http://domain/test/p.png" target="_blank" rel="noopener">http://domain/test/p.png</a></td>
+<td><a target="_blank" rel="noopener" href="http://domain/test/p.png">http://domain/test/p.png</a></td>
 <td>configuration D</td>
 <td>D和E均匹配，并且都是正则匹配，写在上方的优先，D生效</td>
 </tr>
 <tr>
-<td><a href="http://domain/test/p.jpg" target="_blank" rel="noopener">http://domain/test/p.jpg</a></td>
+<td><a target="_blank" rel="noopener" href="http://domain/test/p.jpg">http://domain/test/p.jpg</a></td>
 <td>configuration E of jpg</td>
 <td>同上</td>
 </tr>
 <tr>
-<td><a href="http://domain/test/p.pNG" target="_blank" rel="noopener">http://domain/test/p.pNG</a></td>
+<td><a target="_blank" rel="noopener" href="http://domain/test/p.pNG">http://domain/test/p.pNG</a></td>
 <td>configuration E</td>
 <td>D区分大小写，不匹配pNG，所以E生效</td>
 </tr>
 <tr>
-<td><a href="http://domain/s1long" target="_blank" rel="noopener">http://domain/s1long</a></td>
+<td><a target="_blank" rel="noopener" href="http://domain/s1long">http://domain/s1long</a></td>
 <td>configuration G</td>
 <td>F、G同是最佳匹配，G可以匹配到的内容较长，G优先</td>
 </tr>
@@ -161,7 +160,7 @@
 </table>
 <h3 id="uri后的斜杆"><a href="#uri后的斜杆" class="headerlink" title="uri后的斜杆"></a>uri后的斜杆</h3><p>先祭出官网上的一段话</p>
 <blockquote>
-<p>If a location is defined by a prefix string that ends with the slash character, and requests are processed by one of proxy_pass, fastcgi_pass, uwsgi_pass, scgi_pass, memcached_pass, or grpc_pass, then the special processing is performed. In response to a request with URI equal to this string, but without the trailing slash, a permanent redirect with the code 301 will be returned to the requested URI with the slash appended. If this is not desired, an exact match of the URI and location could be defined like this:<br>location /user/ {<br>    proxy_pass <a href="http://user.example.com" target="_blank" rel="noopener">http://user.example.com</a>;<br>}<br>location = /user {<br>    proxy_pass <a href="http://login.example.com" target="_blank" rel="noopener">http://login.example.com</a>;<br>}</p>
+<p>If a location is defined by a prefix string that ends with the slash character, and requests are processed by one of proxy_pass, fastcgi_pass, uwsgi_pass, scgi_pass, memcached_pass, or grpc_pass, then the special processing is performed. In response to a request with URI equal to this string, but without the trailing slash, a permanent redirect with the code 301 will be returned to the requested URI with the slash appended. If this is not desired, an exact match of the URI and location could be defined like this:<br>location /user/ {<br>    proxy_pass <a target="_blank" rel="noopener" href="http://user.example.com">http://user.example.com</a>;<br>}<br>location = /user {<br>    proxy_pass <a target="_blank" rel="noopener" href="http://login.example.com">http://login.example.com</a>;<br>}</p>
 </blockquote>
 <p>就是说如果有一个uri是以斜杆开始以斜杆结束的，并且内部有转发请求的，如果访问的url除了末尾的斜杆不匹配以外，其他都匹配，nginx会返回永久重定向。如果这不是想要的结果，可以加上一个精确匹配的location。</p>
 <h3 id="proxy-pass的转发规则"><a href="#proxy-pass的转发规则" class="headerlink" title="proxy_pass的转发规则"></a>proxy_pass的转发规则</h3><p>proxy_pass用在location中转发请求给后端服务，proxy_pass的转发url有两种，nginx对它们的处理方法不同。</p>
@@ -170,9 +169,9 @@
 <li>另一种是带有路径部分。<code>proxy_pass http://127.0.0.1/remote/;</code>。这种情况，nginx先把location中匹配的部分路径去掉，剩下的拼接，然后发起请求。特别注意，<code>proxy_pass http://127.0.0.1/;</code>这个也属于这一类。</li>
 </ol>
 <h3 id="alias与root在location中的区别"><a href="#alias与root在location中的区别" class="headerlink" title="alias与root在location中的区别"></a>alias与root在location中的区别</h3><p>在配置location的静态文件目录时，用到alias与root，两者处理规则略有不同。这里用两个简单例子说明。</p>
-<h4 id="alias"><a href="#alias" class="headerlink" title="alias"></a>alias</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location ^~ /test/ &#123;</span><br><span class="line"> 	alias /www/root/html/my_test/;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="alias"><a href="#alias" class="headerlink" title="alias"></a>alias</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location ^~ /test/ &#123;</span><br><span class="line"> 	alias /www/root/html/my_test/;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这种情况，如果一个请求的URI是/test/one.html时，web服务器将会返回服务器上的/www/root/html/my_test/one.html的文件。因为alias是把location后面配置的路径（也就是匹配部分）丢弃掉。</p>
-<h4 id="root"><a href="#root" class="headerlink" title="root"></a>root</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location ^~ /test/ &#123;</span><br><span class="line">	root /www/root/html/my_test/;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="root"><a href="#root" class="headerlink" title="root"></a>root</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location ^~ /test/ &#123;</span><br><span class="line">	root /www/root/html/my_test/;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这里就不一样了。如果一个请求的URI是/test/one.html时，web服务器将会返回服务器上的/www/root/html/my_test/test/one.html的文件。root是在指定的目录下，寻找请求路径文件，不会去除匹配到的部分。</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>location的匹配优先级如下：</p>
 <ol>
@@ -185,7 +184,7 @@
             
         </div>
         <footer class="article-footer">
-            <!--<a data-url="https://blog.coding51.com/2018/09/23/nginx-location/" data-id="ckyh1zmfb0004ezjd8z0n60lz" class="article-share-link">分享</a>-->
+            <!--<a data-url="https://blog.coding51.com/2018/09/23/nginx-location/" data-id="ckyh2hxk70004y9jdhpndflkm" class="article-share-link">分享</a>-->
             
             
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/location/" rel="tag">location</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li></ul>

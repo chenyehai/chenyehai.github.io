@@ -7,12 +7,12 @@
   
   <title>使用ssh连接git服务器 | 我的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="配置git-ssh主要步骤如下： 安装git（选择自己喜欢的安装方法即可），配置git的user、email等基本操作。为了步骤的完整，这里也写一下配置user、email的方法。 12$ git config --global user.name &quot;username&quot;$ git config --global user.email &quot;example@email.com&quot;  生成密钥文件。 1$">
+  <meta name="description" content="配置git-ssh主要步骤如下： 安装git（选择自己喜欢的安装方法即可），配置git的user、email等基本操作。为了步骤的完整，这里也写一下配置user、email的方法。 12$ git config --global user.name &quot;username&quot;$ git config --global user.email &quot;example@email.co">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用ssh连接git服务器">
 <meta property="og:url" content="https://blog.coding51.com/2018/09/23/git-ssh/index.html">
 <meta property="og:site_name" content="我的博客">
-<meta property="og:description" content="配置git-ssh主要步骤如下： 安装git（选择自己喜欢的安装方法即可），配置git的user、email等基本操作。为了步骤的完整，这里也写一下配置user、email的方法。 12$ git config --global user.name &quot;username&quot;$ git config --global user.email &quot;example@email.com&quot;  生成密钥文件。 1$">
+<meta property="og:description" content="配置git-ssh主要步骤如下： 安装git（选择自己喜欢的安装方法即可），配置git的user、email等基本操作。为了步骤的完整，这里也写一下配置user、email的方法。 12$ git config --global user.name &quot;username&quot;$ git config --global user.email &quot;example@email.co">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2018-09-23T06:07:40.000Z">
 <meta property="article:modified_time" content="2022-01-16T09:12:19.580Z">
@@ -88,19 +88,17 @@
             
                 <h3 id="配置git-ssh主要步骤如下："><a href="#配置git-ssh主要步骤如下：" class="headerlink" title="配置git-ssh主要步骤如下："></a>配置git-ssh主要步骤如下：</h3><ol>
 <li><p>安装git（选择自己喜欢的安装方法即可），配置git的user、email等基本操作。为了步骤的完整，这里也写一下配置user、email的方法。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global user.name <span class="string">"username"</span></span><br><span class="line">$ git config --global user.email <span class="string">"example@email.com"</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global user.name <span class="string">&quot;username&quot;</span></span><br><span class="line">$ git config --global user.email <span class="string">&quot;example@email.com&quot;</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>生成密钥文件。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-keygen -t rsa -C <span class="string">"example@email.com"</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-keygen -t rsa -C <span class="string">&quot;example@email.com&quot;</span></span><br></pre></td></tr></table></figure>
 <p>回车执行该命令，可以一路回车下去密钥文件生成完毕。 <code>-t</code>参数表示密钥类型， -C参数是注释（comment），所以这个理论上可以随便写（有文章说这个是git的用户邮箱，其实没有限制）</p>
-<ol start="3">
-<li>查看（可以执行<code>cat ~/.ssh/id_rsa.pub</code>）并拷贝公钥文件内容到git服务器，即上一步生成的pub后缀文件（默认id_rsa.pub）。</li>
-<li>执行测试是否成功.<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -T git@github.com</span><br></pre></td></tr></table></figure>
 </li>
+<li><p>查看（可以执行<code>cat ~/.ssh/id_rsa.pub</code>）并拷贝公钥文件内容到git服务器，即上一步生成的pub后缀文件（默认id_rsa.pub）。</p>
+</li>
+<li>执行测试是否成功.<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+看到如下提示内容：</li>
 </ol>
-<p>看到如下提示内容：</p>
 <blockquote>
 <p>The authenticity of host ‘github.com (207.97.227.239)’ can’t be established.</p>
 <p>RSA key fingerprint is SHA256:jok3FH7q5LJ6qvU8iPNehBgXRw51ErE77S0Dn+Vg/Ik.</p>
@@ -114,24 +112,22 @@
 <h3 id="使用https协议clone的项目，修改为ssh协议"><a href="#使用https协议clone的项目，修改为ssh协议" class="headerlink" title="使用https协议clone的项目，修改为ssh协议"></a>使用<code>https</code>协议<code>clone</code>的项目，修改为ssh协议</h3><p>如果有项目之前用https输入密码<code>clone</code>的，现在仍然需要输入账号密码。因此，需要手动修改项目的<code>git</code>配置。打开项目的<code>.git</code>文件夹下的config文件，找到remote节点的内容如下：</p>
 <blockquote>
 <p>［remote “origin”］</p>
-<p>　　　　url = <font color="#0f0">https://</font>github.com<font color="#0f0">/</font>username/project.git</p>
+<p>　　　　url = <font color='#0f0'>https://</font>github.com<font color='#0f0'>/</font>username/project.git</p>
 <p>　　　　fetch = +refs/heads/<em>:refs/remotes/origin/</em></p>
 </blockquote>
 <p>修改为</p>
 <blockquote>
 <p>［remote “origin”］</p>
-<p>　　　　url = <font color="#f00">git@</font>github.com<font color="#f00">:</font>username/project.git</p>
+<p>　　　　url = <font color='#f00'>git@</font>github.com<font color='#f00'>:</font>username/project.git</p>
 <p>　　　　fetch = +refs/heads/<em>:refs/remotes/origin/</em></p>
 </blockquote>
 <p>主要是修改协议名，以及域名后面的第一个斜杆改为冒号，已经用颜色区别。还可以直接从git服务器页面上拷贝那个ssh的url过来，快捷不会出错。</p>
-<h3 id="其他方法"><a href="#其他方法" class="headerlink" title="其他方法"></a>其他方法</h3><p>如果你使用的git服务器不支持ssh协议连接，http协议连接也有方法免去每次连接都输入密码。方法就是使用<code>git</code>的凭证存储功能。<br>执行如下命令进行配置<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global credential.helper cache</span><br></pre></td></tr></table></figure></p>
-<p>最后一个参数<code>cache</code>表示是缓存模式，该模式会将凭证存放在内存中一段时间。 密码永远不会被存储在磁盘中，并且在15分钟后从内存中清除。也可以在后面加上缓存时间参数<code>--timeout seconds</code>指定缓存seconds秒。<br>除了<code>cache</code>模式以外，还有<code>store</code>模式，永久存储，将上述命令改为如下命令即可：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global credential.helper store</span><br></pre></td></tr></table></figure></p>
-<p><strong> 注意： store模式的密码是明文保存的 </strong></p>
+<h3 id="其他方法"><a href="#其他方法" class="headerlink" title="其他方法"></a>其他方法</h3><p>如果你使用的git服务器不支持ssh协议连接，http协议连接也有方法免去每次连接都输入密码。方法就是使用<code>git</code>的凭证存储功能。<br>执行如下命令进行配置<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global credential.helper cache</span><br></pre></td></tr></table></figure><br>最后一个参数<code>cache</code>表示是缓存模式，该模式会将凭证存放在内存中一段时间。 密码永远不会被存储在磁盘中，并且在15分钟后从内存中清除。也可以在后面加上缓存时间参数<code>--timeout seconds</code>指定缓存seconds秒。<br>除了<code>cache</code>模式以外，还有<code>store</code>模式，永久存储，将上述命令改为如下命令即可：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global credential.helper store</span><br></pre></td></tr></table></figure><br><strong> 注意： store模式的密码是明文保存的 </strong></p>
 
             
         </div>
         <footer class="article-footer">
-            <!--<a data-url="https://blog.coding51.com/2018/09/23/git-ssh/" data-id="ckyh1zmfm000dezjdexfwm045" class="article-share-link">分享</a>-->
+            <!--<a data-url="https://blog.coding51.com/2018/09/23/git-ssh/" data-id="ckyh2hxke000hy9jdac8y640d" class="article-share-link">分享</a>-->
             
             
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/" rel="tag">git</a></li></ul>

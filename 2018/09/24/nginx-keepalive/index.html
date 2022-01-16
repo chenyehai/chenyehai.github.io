@@ -100,14 +100,14 @@
 </ol>
 <p>以上三个指令在配置中的上下文均为<code>http, server, location</code>。另外<code>keepalive</code>指令与客户端无关。</p>
 <h3 id="upstream中的keepalive指令"><a href="#upstream中的keepalive指令" class="headerlink" title="upstream中的keepalive指令"></a>upstream中的keepalive指令</h3><p>nginx的<code>keepalive</code>指令是应用在<code>upstream</code>，其含义不是保活时间。可以说跟http的keep-alive机制无关。<code>upstream</code>中的<code>keepalive</code>是指每个worker进程缓存中的最大的<strong>空闲</strong>连接数量。<br>查看官方文档得知，从<code>1.15.3</code>版本起，<code>upstream</code>中也支持<code>keepalive_requests</code>和<code>keepalive_timeout</code>指令，但是这个是配置与上游服务的连接保持时间以及复用次数的，与客户端无关。</p>
-<p>另外，在<code>location</code>中加入如下设置:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">proxy_http_version 1.1; # 指定与上游服务器使用的http协议版本1.1</span><br><span class="line">proxy_set_header Connection &quot;&quot;; # 清除客户端带来的connection</span><br></pre></td></tr></table></figure></p>
+<p>另外，在<code>location</code>中加入如下设置:<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">proxy_http_version 1.1; # 指定与上游服务器使用的http协议版本1.1</span><br><span class="line">proxy_set_header Connection &quot;&quot;; # 清除客户端带来的connection</span><br></pre></td></tr></table></figure></p>
 <h3 id="http1-0与http1-1中的keep-alive区别"><a href="#http1-0与http1-1中的keep-alive区别" class="headerlink" title="http1.0与http1.1中的keep-alive区别"></a>http1.0与http1.1中的keep-alive区别</h3><p>http1.0默认不开启<code>keep-alive</code>, 开启<code>keepalive</code>需要在头部中包含一个<code>Connection: Keep-Alive</code>的头域。http1.1默认支持持久连接，关闭需要在头部中包含一个<code>Connection: close</code>头域。</p>
 <p>另外，http中的保活时间等设置是建议，不是承诺。</p>
 
             
         </div>
         <footer class="article-footer">
-            <!--<a data-url="https://blog.coding51.com/2018/09/24/nginx-keepalive/" data-id="ckyh1zmf90002ezjd9zeclbvr" class="article-share-link">分享</a>-->
+            <!--<a data-url="https://blog.coding51.com/2018/09/24/nginx-keepalive/" data-id="ckyh2hxk40002y9jd7qmnegb6" class="article-share-link">分享</a>-->
             
             
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http/" rel="tag">http</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/keepalive/" rel="tag">keepalive</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li></ul>

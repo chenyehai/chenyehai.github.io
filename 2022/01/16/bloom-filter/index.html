@@ -87,13 +87,13 @@
             
                 <h3 id="布隆过滤器背景"><a href="#布隆过滤器背景" class="headerlink" title="布隆过滤器背景"></a>布隆过滤器背景</h3><p>若要判断一个元素是否已经出现过，我们可以所有元素通过某种数据结构实现的容器保存起来，需要判断时再从保存的容器里查找。这种容器可以是哈希表、链表等数据结构实现的。无论如何，它们需要的空间复杂度至少是o(n)。如果元素非常多时，需要的空间则非常大。我们知道算法的实现一般时间和空间可以互换，但是当元素个数很多时，无论是时间换空间还是空间换时间，恐怕都不能接受。<br>布隆过滤器就是适用于判断一个元素是否在某个集合中，如果集合中的元素可能非常多，而使用上又可以接受一定的误判率的话，使用布隆过滤器最适合不过了。</p>
 <h3 id="布隆过滤器的实现"><a href="#布隆过滤器的实现" class="headerlink" title="布隆过滤器的实现"></a>布隆过滤器的实现</h3><p>布隆过滤器具体实现我并不清楚，总体上来说就是一个二进制向量和一系列哈希函数构成的。这一系列哈希函数在布隆过滤器初始化时需要确定，理论上是不能后期增删哈希函数个数或者改变哈希算法的。布隆过滤器所需要的空间大小是由二进制向量的维数确定。<br>初始化时，将向量各个维置为0.<br>当往布隆过滤器中增加一个元素时，每个哈希函数都计算该元素的散列值，然后把得到的各个散列值对应的二进制向量的各分量置为1。<br>当需要查询元素是否在集合中时，每个哈希函数计算元素的散列值，查询各散列值对应的向量的各分量是否<strong>均为1</strong>。<br>可见布隆过滤器的空间是确定的，时间复杂度是常数的。优点很明显。</p>
-<h3 id="布隆过滤器缺点"><a href="#布隆过滤器缺点" class="headerlink" title="布隆过滤器缺点"></a>布隆过滤器缺点</h3><p>根据布隆过滤器的实现理论可知，误判率是肯定存在的，因为哈希函数都是有可能碰撞的。但是布隆过滤器只会将不存在的元素误判为存在，不会将存在的元素误判为不存在。可以认为布隆过滤器查询元素是否存在时，返回值有两种:<code>元素**一定**不存在</code>和<code>元素**可能**存在</code>。即判断它存在时，它实际可能不存在。另外，它的误判率取决于二进制向量的维数、哈希函数个数和可能存储的元素个数。<a href="https://en.wikipedia.org/wiki/Bloom_filter#Probability_of_false_positives" target="_blank" rel="noopener">维基百科</a>上有有关它的误判率计算与证明。<br><a href="https://krisives.github.io/bloom-calculator/" target="_blank" rel="noopener">这里</a>有个网页版的误判率计算器。<br>另外由于是它借助一个二进制向量存储信息，所以布隆过滤器也不能删除某个元素，因为向量的分量不是0就是1，无法简单地加减。如果向量的某些分量从1变为0，将会导致其他元素的误删除。</p>
-<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><p>使用布隆过滤器的前提是充分理解并且接受它的缺点，如果业务要求绝对准确，那么它就不适合。一般在推荐算法等，数据量庞大，细小的误判率不会导致结果有很大偏差时可以使用。另外在缓存架构方面也可以应用。redis4.0可以通过扩展模块使用布隆过滤器，具体<a href="https://redislabs.com/blog/rebloom-bloom-filter-datatype-redis/" target="_blank" rel="noopener">这里有介绍</a>。</p>
+<h3 id="布隆过滤器缺点"><a href="#布隆过滤器缺点" class="headerlink" title="布隆过滤器缺点"></a>布隆过滤器缺点</h3><p>根据布隆过滤器的实现理论可知，误判率是肯定存在的，因为哈希函数都是有可能碰撞的。但是布隆过滤器只会将不存在的元素误判为存在，不会将存在的元素误判为不存在。可以认为布隆过滤器查询元素是否存在时，返回值有两种:<code>元素**一定**不存在</code>和<code>元素**可能**存在</code>。即判断它存在时，它实际可能不存在。另外，它的误判率取决于二进制向量的维数、哈希函数个数和可能存储的元素个数。<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Bloom_filter#Probability_of_false_positives">维基百科</a>上有有关它的误判率计算与证明。<br><a target="_blank" rel="noopener" href="https://krisives.github.io/bloom-calculator/">这里</a>有个网页版的误判率计算器。<br>另外由于是它借助一个二进制向量存储信息，所以布隆过滤器也不能删除某个元素，因为向量的分量不是0就是1，无法简单地加减。如果向量的某些分量从1变为0，将会导致其他元素的误删除。</p>
+<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><p>使用布隆过滤器的前提是充分理解并且接受它的缺点，如果业务要求绝对准确，那么它就不适合。一般在推荐算法等，数据量庞大，细小的误判率不会导致结果有很大偏差时可以使用。另外在缓存架构方面也可以应用。redis4.0可以通过扩展模块使用布隆过滤器，具体<a target="_blank" rel="noopener" href="https://redislabs.com/blog/rebloom-bloom-filter-datatype-redis/">这里有介绍</a>。</p>
 
             
         </div>
         <footer class="article-footer">
-            <!--<a data-url="https://blog.coding51.com/2022/01/16/bloom-filter/" data-id="ckyh1zmfk000bezjde37p7x60" class="article-share-link">分享</a>-->
+            <!--<a data-url="https://blog.coding51.com/2022/01/16/bloom-filter/" data-id="ckyh2hxkv001ry9jdeqgg7y4e" class="article-share-link">分享</a>-->
             
             
             
