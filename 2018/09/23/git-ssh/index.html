@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>使用ssh连接git服务器 | 我的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="配置git-ssh主要步骤如下： 安装git（选择自己喜欢的安装方法即可），配置git的user、email等基本操作。为了步骤的完整，这里也写一下配置user、email的方法。 12$ git config --global user.name &quot;username&quot;$ git config --global user.email &quot;example@email.com&quot;  生成密钥文件。 1$">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用ssh连接git服务器">
+<meta property="og:url" content="https://blog.coding51.com/2018/09/23/git-ssh/index.html">
+<meta property="og:site_name" content="我的博客">
+<meta property="og:description" content="配置git-ssh主要步骤如下： 安装git（选择自己喜欢的安装方法即可），配置git的user、email等基本操作。为了步骤的完整，这里也写一下配置user、email的方法。 12$ git config --global user.name &quot;username&quot;$ git config --global user.email &quot;example@email.com&quot;  生成密钥文件。 1$">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-09-23T06:07:40.000Z">
+<meta property="article:modified_time" content="2022-01-16T09:12:19.580Z">
+<meta property="article:author" content="Yehai Chen">
+<meta property="article:tag" content="git">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <!--<link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">-->
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">我的博客</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">首页</a>
+        
+          <a class="main-nav-link" href="/archives">归档</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        <!---->
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.coding51.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-使用ssh连接git服务器" class="article article-type-post" itemscope
+         itemprop="blogPost">
+    <div class="article-meta">
+        <a href="/2018/09/23/git-ssh/" class="article-date">
+  <time datetime="2018-09-23T06:07:40.000Z" itemprop="datePublished">2018-09-23</time>
+</a>
+        
+    </div>
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+  
+    <h1 class="article-title" itemprop="name">
+      使用ssh连接git服务器
+    </h1>
+  
+
+            </header>
+        
+        <div class="article-entry" itemprop="articleBody">
+            
+                <h3 id="配置git-ssh主要步骤如下："><a href="#配置git-ssh主要步骤如下：" class="headerlink" title="配置git-ssh主要步骤如下："></a>配置git-ssh主要步骤如下：</h3><ol>
+<li><p>安装git（选择自己喜欢的安装方法即可），配置git的user、email等基本操作。为了步骤的完整，这里也写一下配置user、email的方法。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global user.name <span class="string">"username"</span></span><br><span class="line">$ git config --global user.email <span class="string">"example@email.com"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>生成密钥文件。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-keygen -t rsa -C <span class="string">"example@email.com"</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>回车执行该命令，可以一路回车下去密钥文件生成完毕。 <code>-t</code>参数表示密钥类型， -C参数是注释（comment），所以这个理论上可以随便写（有文章说这个是git的用户邮箱，其实没有限制）</p>
+<ol start="3">
+<li>查看（可以执行<code>cat ~/.ssh/id_rsa.pub</code>）并拷贝公钥文件内容到git服务器，即上一步生成的pub后缀文件（默认id_rsa.pub）。</li>
+<li>执行测试是否成功.<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>看到如下提示内容：</p>
+<blockquote>
+<p>The authenticity of host ‘github.com (207.97.227.239)’ can’t be established.</p>
+<p>RSA key fingerprint is SHA256:jok3FH7q5LJ6qvU8iPNehBgXRw51ErE77S0Dn+Vg/Ik.</p>
+<p>RSA key fingerprint is MD5:98:ab:2b:30:60:00:82:86:bb:81:db:87:22:c4:2f:b1.</p>
+<p>Are you sure you want to continue connecting (yes/no)?</p>
+</blockquote>
+<p>输入yes，回车即可。此时正常则会出现成功的提示。</p>
+<ol start="5">
+<li>可以不输密码直接进行<code>clone</code> 项目了。</li>
+</ol>
+<h3 id="使用https协议clone的项目，修改为ssh协议"><a href="#使用https协议clone的项目，修改为ssh协议" class="headerlink" title="使用https协议clone的项目，修改为ssh协议"></a>使用<code>https</code>协议<code>clone</code>的项目，修改为ssh协议</h3><p>如果有项目之前用https输入密码<code>clone</code>的，现在仍然需要输入账号密码。因此，需要手动修改项目的<code>git</code>配置。打开项目的<code>.git</code>文件夹下的config文件，找到remote节点的内容如下：</p>
+<blockquote>
+<p>［remote “origin”］</p>
+<p>　　　　url = <font color="#0f0">https://</font>github.com<font color="#0f0">/</font>username/project.git</p>
+<p>　　　　fetch = +refs/heads/<em>:refs/remotes/origin/</em></p>
+</blockquote>
+<p>修改为</p>
+<blockquote>
+<p>［remote “origin”］</p>
+<p>　　　　url = <font color="#f00">git@</font>github.com<font color="#f00">:</font>username/project.git</p>
+<p>　　　　fetch = +refs/heads/<em>:refs/remotes/origin/</em></p>
+</blockquote>
+<p>主要是修改协议名，以及域名后面的第一个斜杆改为冒号，已经用颜色区别。还可以直接从git服务器页面上拷贝那个ssh的url过来，快捷不会出错。</p>
+<h3 id="其他方法"><a href="#其他方法" class="headerlink" title="其他方法"></a>其他方法</h3><p>如果你使用的git服务器不支持ssh协议连接，http协议连接也有方法免去每次连接都输入密码。方法就是使用<code>git</code>的凭证存储功能。<br>执行如下命令进行配置<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global credential.helper cache</span><br></pre></td></tr></table></figure></p>
+<p>最后一个参数<code>cache</code>表示是缓存模式，该模式会将凭证存放在内存中一段时间。 密码永远不会被存储在磁盘中，并且在15分钟后从内存中清除。也可以在后面加上缓存时间参数<code>--timeout seconds</code>指定缓存seconds秒。<br>除了<code>cache</code>模式以外，还有<code>store</code>模式，永久存储，将上述命令改为如下命令即可：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global credential.helper store</span><br></pre></td></tr></table></figure></p>
+<p><strong> 注意： store模式的密码是明文保存的 </strong></p>
+
+            
+        </div>
+        <footer class="article-footer">
+            <!--<a data-url="https://blog.coding51.com/2018/09/23/git-ssh/" data-id="ckyh1zmfm000dezjdexfwm045" class="article-share-link">分享</a>-->
+            
+            
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/" rel="tag">git</a></li></ul>
+
+            
+            <div style="text-align: right; color: #666">
+                <span id="busuanzi_container_page_pv" >本文访问量<span id="busuanzi_value_page_pv"></span>次</span>
+            </div>
+            
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+  
+    <a href="/2018/09/23/nginx-location/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          nginx的location匹配规则
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/09/22/example-post/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Hello World</div>
+    </a>
+  
+</nav>
+
+    
+</article>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/GIL/" rel="tag">GIL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MRO/" rel="tag">MRO</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PyPI/" rel="tag">PyPI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker-%E5%91%BD%E4%BB%A4/" rel="tag">docker 命令</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/" rel="tag">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http/" rel="tag">http</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/keepalive/" rel="tag">keepalive</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/location/" rel="tag">location</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oop/" rel="tag">oop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/with/" rel="tag">with</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%B8%8A%E4%B8%8B%E6%96%87%E7%AE%A1%E7%90%86/" rel="tag">上下文管理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%93%E5%8C%85/" rel="tag">打包</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AD%E5%8C%85/" rel="tag">闭包</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/GIL/" style="font-size: 10px;">GIL</a> <a href="/tags/MRO/" style="font-size: 10px;">MRO</a> <a href="/tags/PyPI/" style="font-size: 10px;">PyPI</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/docker-%E5%91%BD%E4%BB%A4/" style="font-size: 10px;">docker 命令</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/http/" style="font-size: 10px;">http</a> <a href="/tags/keepalive/" style="font-size: 10px;">keepalive</a> <a href="/tags/location/" style="font-size: 10px;">location</a> <a href="/tags/nginx/" style="font-size: 15px;">nginx</a> <a href="/tags/oop/" style="font-size: 10px;">oop</a> <a href="/tags/python/" style="font-size: 20px;">python</a> <a href="/tags/with/" style="font-size: 10px;">with</a> <a href="/tags/%E4%B8%8A%E4%B8%8B%E6%96%87%E7%AE%A1%E7%90%86/" style="font-size: 10px;">上下文管理</a> <a href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" style="font-size: 10px;">异常处理</a> <a href="/tags/%E6%89%93%E5%8C%85/" style="font-size: 10px;">打包</a> <a href="/tags/%E9%97%AD%E5%8C%85/" style="font-size: 10px;">闭包</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/01/">一月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">一月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2022/01/16/bloom-filter/">布隆过滤器简介</a>
+          </li>
+        
+          <li>
+            <a href="/2020/01/05/docker-inspect/">docker inspect命令</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/02/python-oop-mro/">python类的继承与方法解析顺序（MRO）</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/02/python-pypi/">代码库打包上传到PyPI服务器</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/01/python-with/">python上下文管理利器--with</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+    
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            <span id="busuanzi_container_site_pv" style="font-size: 18px">访问量<span
+                        id="busuanzi_value_site_pv"></span>次</span>
+            <br>
+            <span id="busuanzi_container_site_uv"  style="font-size: 18px">访客数<span id="busuanzi_value_site_uv"></span>人</span>
+            <br>
+            &copy; 2022 Yehai Chen<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        </div>
+    </div>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//libs.baidu.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+  </div>
+</body>
+</html>
