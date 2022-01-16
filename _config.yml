@@ -28,7 +28,7 @@ permalink_defaults:
 
 # Directory
 source_dir: source
-public_dir: docs
+public_dir: public 
 tag_dir: tags
 archive_dir: archives
 category_dir: categories
@@ -86,5 +86,7 @@ theme: landscape
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
-  type:
-
+  type: git
+  repo: git@github.com:chenyehai/chenyehai.github.io.git
+  branch: gh-pages
+ 
